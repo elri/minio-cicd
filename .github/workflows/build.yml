@@ -30,7 +30,9 @@ jobs:
         with:            
           context: .
           push: true
-          tags: ghcr.io/eri/${{ env.IMG_TAG }}
+          tags: |
+            elri/${{ env.IMG_TAG }} 
+            ghcr.io/elri/${{ env.IMG_TAG }}
           build-args: |
             MINIO_ACCESS_KEY=${{ env.MINIO_ACCESS_KEY }}
             MINIO_SECRET_KEY=${{ env.MINIO_SECRET_KEY }}
