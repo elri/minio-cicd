@@ -31,7 +31,6 @@ jobs:
           context: .
           push: true
           tags: |
-            elri/${{ env.IMG_TAG }} 
             ghcr.io/elri/${{ env.IMG_TAG }}
           build-args: |
             MINIO_ACCESS_KEY=${{ env.MINIO_ACCESS_KEY }}
