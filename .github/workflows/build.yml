@@ -5,7 +5,8 @@ on:
     branches: [ main ]
 
 env:
-  IMG_TAG: "minio:cicd"
+  VERSION: latest
+  IMG: "minio-cicd"
   MINIO_ACCESS_KEY: minioadmin 
   MINIO_SECRET_KEY: minioadmin
 
@@ -34,7 +35,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/elri/${{ env.IMG_TAG }}
+            ghcr.io/elri/${{ env.IMG }}:${{ env.VERSION }}
           build-args: |
+            VERSION=${{ env.VERSION }}
             MINIO_ACCESS_KEY=${{ env.MINIO_ACCESS_KEY }}
             MINIO_SECRET_KEY=${{ env.MINIO_SECRET_KEY }}
