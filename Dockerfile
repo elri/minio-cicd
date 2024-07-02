@@ -1,36 +1,4 @@
-#BASED ON minio/minio:edge-cicd (https://github.com/minio/minio/pull/10933)
-FROM golang:1.15-alpine as builder
-
-ENV GOPATH /go
-ENV CGO_ENABLED 0
-ENV GO111MODULE on
-
-RUN  \
-  apk add --no-cache git && \
-  git clone https://github.com/minio/minio && cd minio && \
-  git checkout master && go install -v -ldflags "$(go run buildscripts/gen-ldflags.go)"
-
-FROM alpine:3.12
-
-ENV MINIO_ACCESS_KEY_FILE=access_key \
-  MINIO_SECRET_KEY_FILE=secret_key \
-  MINIO_KMS_MASTER_KEY_FILE=kms_master_key \
-  MINIO_SSE_MASTER_KEY_FILE=sse_master_key \
-  MINIO_UPDATE_MINISIGN_PUBKEY="RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav"
-
-EXPOSE 9000
-EXPOSE 9001
-
-COPY --from=builder /go/bin/minio /usr/bin/minio
-COPY --from=builder /go/minio/CREDITS /third_party/
-COPY --from=builder /go/minio/dockerscripts/docker-entrypoint.sh /usr/bin/
-
-RUN  \
-  apk add --no-cache ca-certificates 'curl>7.61.0' 'su-exec>=0.2' && \
-  echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
-
-ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
-
-VOLUME ["/data"]
+ARG VERSION=latest
+FROM minio/minio:$VERSION
 
 CMD ["minio", "server", "/data", "--address=", ":9000", "--console-address", ":9001"]
