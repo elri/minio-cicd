@@ -1,0 +1,84 @@
+name: BUILD CICD-MINIO IMAGE
+
+on: 
+  push: 
+    branches: [ main ]
+
+env:
+  IMG_TAG: "minio:cicd"
+  MINIO_ACCESS_KEY: minioadmin 
+  MINIO_SECRET_KEY: minioadmin
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: Checkout local
+        uses: actions/checkout@v4
+      -
+        name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      -
+        name: Build and export to Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: ${{ env.IMG_TAG }}
+          cache-from: type=local,src=/tmp/.buildx-cache/amd64
+          cache-to: type=local,dest=/tmp/.buildx-cache-new/amd64,mode=max
+          build-args: |
+            MINIO_ACCESS_KEY=${{ env.MINIO_ACCESS_KEY }}
+            MINIO_SECRET_KEY=${{ env.MINIO_SECRET_KEY }}
+      -
+        name: Container scan
+        uses: azure/container-scan@v0
+        with:
+          image-name: ${{ env.IMG_TAG }}
+          severity-threshold: CRITICAL
+      -
+        name: Build Docker for linux/arm64
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/arm64
+          tags: ${{ env.IMG_TAG }}
+          cache-from: type=local,src=/tmp/.buildx-cache/arm64
+          cache-to: type=local,dest=/tmp/.buildx-cache-new/arm64,mode=max
+          build-args: |
+            MINIO_ACCESS_KEY=${{ env.MINIO_ACCESS_KEY }}
+            MINIO_SECRET_KEY=${{ env.MINIO_SECRET_KEY }}
+      -
+        # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
+        name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          du -sh /tmp/.buildx-cache
+      -
+        name: Login to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+            registry: ghcr.io
+            username: ${{ github.repository_owner }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+      - 
+        name: Build and export to Docker
+        uses: docker/build-push-action@v5
+        with:            
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ghcr.io/eri/${{ env.IMG_TAG }}
+          build-args: |
+            MINIO_ACCESS_KEY=${{ env.MINIO_ACCESS_KEY }}
+            MINIO_SECRET_KEY=${{ env.MINIO_SECRET_KEY }}
