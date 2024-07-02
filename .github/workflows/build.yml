@@ -5,10 +5,12 @@ on:
     branches: [ main ]
 
 env:
-  VERSION: latest
+  VERSION: dev
   IMG: "minio-cicd"
   MINIO_ACCESS_KEY: minioadmin 
   MINIO_SECRET_KEY: minioadmin
+  MINIO_BUCKET_NAME: ""
+  MINIO_BUCKET_PUBLIC: False
 
 jobs:
   build:
@@ -38,5 +40,7 @@ jobs:
             ghcr.io/elri/${{ env.IMG }}:${{ env.VERSION }}
           build-args: |
             VERSION=${{ env.VERSION }}
-            MINIO_ACCESS_KEY=${{ env.MINIO_ACCESS_KEY }}
-            MINIO_SECRET_KEY=${{ env.MINIO_SECRET_KEY }}
+            MINIO_ROOT_USER: ${{ env.MINIO_ACCESS_KEY }}
+            MINIO_ROOT_PASSWORD: ${{ env.MINIO_SECRET_KEY }}
+            MINIO_BUCKET_NAME: ${{ env.MINIO_BUCKET_NAME }}
+            MINIO_BUCKET_PUBLIC: ${{ env.MINIO_BUCKET_PUBLIC }}
