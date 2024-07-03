@@ -7,9 +7,7 @@ on:
     - cron: '0 8 15 * *' # The 15th every month at 8:00
 
 env:
-  VERSION: dev
-  MINIO_ACCESS_KEY: minioadmin 
-  MINIO_SECRET_KEY: minioadmin
+  VERSION: latest
 
 jobs:
   build:
@@ -40,9 +38,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/elri/minio-cicd:latest 
-            ghcr.io/elri/minio-cicd:${{ env.VERSION }}
+            ghcr.io/cparta/minio-cicd:latest 
+            ghcr.io/cparta/minio-cicd:${{ env.VERSION }}
           build-args: |
             VERSION=${{ env.VERSION }}
-            MINIO_ROOT_USER: ${{ env.MINIO_ACCESS_KEY }}
-            MINIO_ROOT_PASSWORD: ${{ env.MINIO_SECRET_KEY }}
