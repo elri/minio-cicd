@@ -22,4 +22,4 @@ else:
     latest = json.load(latest)
     version = latest["tag_name"]
 
-print("MISP_VERSION={}".format(version))
+print("VERSION={}".format(version))

@@ -33,6 +33,7 @@ jobs:
         name: Fetch latest version
         run: |
           python3 .github/workflows/docker-version.py >> $GITHUB_ENV
+          echo ${{ env.VERSION }}
       - 
         name: Build and export to Docker
         uses: docker/build-push-action@v5
