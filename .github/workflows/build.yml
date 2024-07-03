@@ -1,16 +1,14 @@
 name: BUILD CICD-MINIO IMAGE
 
-on: 
-  push: 
-    branches: [ main ]
+on:
+  schedule:
+    - cron: '0 15 3,15 * *' # The 1st and 15th every month at 8:00
 
 env:
   VERSION: dev
   IMG: "minio-cicd"
   MINIO_ACCESS_KEY: minioadmin 
   MINIO_SECRET_KEY: minioadmin
-  MINIO_BUCKET_NAME: ""
-  MINIO_BUCKET_PUBLIC: False
 
 jobs:
   build:
@@ -42,5 +40,3 @@ jobs:
             VERSION=${{ env.VERSION }}
             MINIO_ROOT_USER: ${{ env.MINIO_ACCESS_KEY }}
             MINIO_ROOT_PASSWORD: ${{ env.MINIO_SECRET_KEY }}
-            MINIO_BUCKET_NAME: ${{ env.MINIO_BUCKET_NAME }}
-            MINIO_BUCKET_PUBLIC: ${{ env.MINIO_BUCKET_PUBLIC }}
