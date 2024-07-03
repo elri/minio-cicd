@@ -1,8 +1,6 @@
 name: BUILD CICD-MINIO IMAGE
 
 on:
-  push: 
-    branches: [ main ]
   schedule:
     - cron: '0 15 3,15 * *' # The 15th every month at 8:00
 
@@ -33,7 +31,6 @@ jobs:
         name: Fetch latest version
         run: |
           python3 .github/workflows/docker-version.py >> $GITHUB_ENV
-          echo ${{ env.VERSION }}
       - 
         name: Build and export to Docker
         uses: docker/build-push-action@v5
