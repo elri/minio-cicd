@@ -2,7 +2,7 @@ name: BUILD CICD-MINIO IMAGE
 
 on:
   push:
-    branches: [ main ]
+    branches: [ develop ]
   #schedule:
   #  - cron: '0 8 15 * *' # The 15th every month at 8:00
 
@@ -38,7 +38,6 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/minio-cicd:latest 
-            ghcr.io/${{ github.repository_owner }}/minio-cicd:${{ env.VERSION }}
+            ghcr.io/${{ github.repository_owner }}/minio-cicd:develop
           build-args: |
             VERSION=${{ env.VERSION }}
