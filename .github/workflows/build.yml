@@ -3,8 +3,8 @@ name: BUILD CICD-MINIO IMAGE
 on:
   push:
     branches: [ main ]
-  #schedule:
-  #  - cron: '0 8 15 * *' # The 15th every month at 8:00
+  schedule:
+    - cron: '0 8 15 * *' # The 15th every month at 8:00
 
 env:
   VERSION: latest
